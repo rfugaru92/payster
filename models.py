@@ -1,7 +1,5 @@
 import sys
-
-from validator import Validator
-import re
+from dummies import ICheapPaymentGateway, IExpensivePaymentGateway, IPremiumPaymentGateway
 
 
 class Payment(object):
@@ -21,14 +19,17 @@ class Payment(object):
             if PAYMENT_GATEWAYS[gateway_name]['retries']:
                 result = self.retry_payment(client, PAYMENT_GATEWAYS[gateway_name]['retries'])
                 if result:
-                    return True
+                    return
+
             if 'alt' in PAYMENT_GATEWAYS[gateway_name].keys():
                 AltGateway = getattr(sys.modules[__name__], PAYMENT_GATEWAYS[gateway_name]['alt'])
                 alt_client = AltGateway()
                 if PAYMENT_GATEWAYS[gateway_name]['retries_alt']:
-                    return self.retry_payment(alt_client, PAYMENT_GATEWAYS[gateway_name]['retries_alt'])
-                else:
-                    return self.retry_payment(alt_client, 1)
+                    result = self.retry_payment(alt_client, PAYMENT_GATEWAYS[gateway_name]['retries_alt'])
+                    if result:
+                        return
+
+            raise Exception('Failed to process payment.')
 
     def retry_payment(self, client, tries_left):
         try:
@@ -41,9 +42,9 @@ class Payment(object):
             return False
 
     def get_payment_gateway(self):
-        if self.data['amount'] <=20:
+        if int(self.data['amount']) <= 20:
             return 'ICheapPaymentGateway'
-        elif 20 < self.data['amount'] <= 500:
+        elif 20 < int(self.data['amount']) <= 500:
             return 'IExpensivePaymentGateway'
         else:
             return 'IPremiumPaymentGateway'
