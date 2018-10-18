@@ -1,4 +1,5 @@
 from validator import Validator
+import re
 
 
 class Payment(object):
@@ -7,6 +8,7 @@ class Payment(object):
         self.cardHolder = cardHolder
         self.expirationDate = expirationDate
         self.securityCode = securityCode
+
         self.amount = amount
 
     @property
