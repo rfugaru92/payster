@@ -22,15 +22,22 @@ class Payment(object):
                 result = self.retry_payment(client, PAYMENT_GATEWAYS[gateway_name]['retries'])
                 if result:
                     return True
+            if 'alt' in PAYMENT_GATEWAYS[gateway_name].keys():
+                AltGateway = getattr(sys.modules[__name__], PAYMENT_GATEWAYS[gateway_name]['alt'])
+                alt_client = AltGateway()
+                if PAYMENT_GATEWAYS[gateway_name]['retries_alt']:
+                    return self.retry_payment(alt_client, PAYMENT_GATEWAYS[gateway_name]['retries_alt'])
+                else:
+                    return self.retry_payment(alt_client, 1)
 
-    def retry_payment(self, client, left):
+    def retry_payment(self, client, tries_left):
         try:
             client.connect()
             client.process_payment(self.data)
             return True
         except:
-            if left:
-                self.retry_payment(client, left-1)
+            if tries_left:
+                self.retry_payment(client, tries_left - 1)
             return False
 
     def get_payment_gateway(self):
