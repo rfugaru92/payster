@@ -10,7 +10,6 @@ class Validator:
         for key in VALIDATION_SCHEMA['properties'].keys():
             val = request.form.get(key)
             if val:
-                print(key)
                 if 'type' in VALIDATION_SCHEMA['properties'][key]:
                     assert(isinstance(val, VALIDATION_SCHEMA['properties'][key]['type']))
 
@@ -18,9 +17,12 @@ class Validator:
                     method = getattr(self, VALIDATION_SCHEMA['properties'][key]['validation_method'])
                     method(val)
 
+                self._data[key] = val
+
         return self._data
 
-    def isValidCard(self, value):
+    @staticmethod
+    def isValidCard(value):
         """
         Guidelines from:
             * https://www.labnol.org/home/understand-credit-card-numbers/18527/
@@ -31,21 +33,23 @@ class Validator:
         pattern = '^([3456][0-9]{3})-?([0-9]{4})-?([0-9]{4})-?([0-9]{4})$'
         assert(re.match(pattern, value), "Card number is invalid.")
 
-    def isValidDate(self, value):
-        try:
-            datetime.strptime(value, '%Y-%m-%d')
-        except:
-            raise Exception("Input string does not have valid date format.")
+    @staticmethod
+    def isValidDate(value):
+        assert(datetime.strptime(value, '%Y-%m-%d'))
 
-    def isValidSecurityCode(self, value):
+    @staticmethod
+    def isValidSecurityCode(value):
         pattern = '^[0-9]{3}'
         assert(re.match(pattern, value))
 
-    def isValidAmount(self, value):
-        assert(value.isdecimal(), "Amount must be decimal.")
-        assert(value > 0, "Amount must have a positive value.")
+    @staticmethod
+    def isValidAmount(value):
+        assert(value.isdecimal())
+        assert(int(value) > 0)
+        print(value.isdecimal())
 
-    def _has_required(self, request):
+    @staticmethod
+    def _has_required(request):
         for prop in VALIDATION_SCHEMA['required']:
             assert(request.form.get(prop))
 
@@ -64,10 +68,10 @@ VALIDATION_SCHEMA = {
         },
         'securityCode': {
             'type': str,
-            'validate_method': 'isValidSecurityCode'
+            'validation_method': 'isValidSecurityCode'
         },
         'amount': {
-            'validate_method': 'isValidAmount'
+            'validation_method': 'isValidAmount'
         }
     },
     'required': ['creditCardNumber', 'cardHolder', 'expirationDate', 'amount']

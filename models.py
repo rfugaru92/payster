@@ -1,52 +1,57 @@
+import sys
+
 from validator import Validator
 import re
 
 
 class Payment(object):
-    def __init__(self, creditCardNumber, cardHolder, expirationDate, amount, securityCode=None):
-        self.creditCardNumber = creditCardNumber
-        self.cardHolder = cardHolder
-        self.expirationDate = expirationDate
-        self.securityCode = securityCode
+    def __init__(self, data):
+        self.data = data
 
-        self.amount = amount
+    def execute_payment(self):
+        gateway_name = self.get_payment_gateway()
+        PaymentGateway = getattr(sys.modules[__name__], gateway_name)
 
-    @property
-    def creditCardNumber(self):
-        return self._creditCardNumber
+        client = PaymentGateway()
+        # Connecting to dummy gateway client
+        try:
+            client.connect()
+            client.process_payment(self.data)
+        except:
+            if PAYMENT_GATEWAYS[gateway_name]['retries']:
+                result = self.retry_payment(client, PAYMENT_GATEWAYS[gateway_name]['retries'])
+                if result:
+                    return True
 
-    @creditCardNumber.setter
-    def creditCardNumber(self, value):
-        self._creditCardNumber = Validator(value)
+    def retry_payment(self, client, left):
+        try:
+            client.connect()
+            client.process_payment(self.data)
+            return True
+        except:
+            if left:
+                self.retry_payment(client, left-1)
+            return False
 
-    @property
-    def cardHolder(self):
-        return self._cardHolder
+    def get_payment_gateway(self):
+        if self.data['amount'] <=20:
+            return 'ICheapPaymentGateway'
+        elif 20 < self.data['amount'] <= 500:
+            return 'IExpensivePaymentGateway'
+        else:
+            return 'IPremiumPaymentGateway'
 
-    @cardHolder.setter
-    def cardHolder(self, value):
-        self._cardHolder = Validator(value)
 
-    @property
-    def expirationDate(self):
-        return self._expirationDate
-
-    @expirationDate.setter
-    def expirationDate(self, value):
-        self._expirationDate = Validator(value)
-
-    @property
-    def securityCode(self):
-        return self._securityCode
-
-    @securityCode.setter
-    def securityCode(self, value):
-        self._securityCode = Validator(value)
-
-    @property
-    def amount(self):
-        return self._amount
-
-    @amount.setter
-    def amount(self, value):
-        self._amount = Validator(value)
+PAYMENT_GATEWAYS = {
+    'ICheapPaymentGateway': {
+        'retries': 0
+    },
+    'IExpensivePaymentGateway': {
+        'retries': 0,
+        'alt': 'ICheapPaymentGateway',
+        'retries_alt': 1
+    },
+    'IPremiumPaymentGateway': {
+        'retries': 3
+    }
+}

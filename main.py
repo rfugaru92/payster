@@ -1,6 +1,6 @@
-from flask import Flask, request, Response
 import json
-from models import Payment
+
+from flask import Flask, request, Response
 from validator import Validator
 
 app = Flask(__name__)
@@ -11,10 +11,13 @@ validate = Validator()
 def ProcessPayment():
     try:
         valid_data = validate(request)
-        print(valid_data)
-        return Response('E bine', status=200, mimetype="application/text")
     except:
         return Response(status=400)
+
+
+    return Response(status=200)
+
+
 
 
 if __name__ == "__main__":
