@@ -1,3 +1,8 @@
+"""
+Dummy classes to simulate payment gateways.
+"""
+
+
 class ICheapPaymentGateway:
     available = True
 
