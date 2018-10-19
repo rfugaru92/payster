@@ -1,5 +1,4 @@
 import sys
-from dummies import ICheapPaymentGateway, IExpensivePaymentGateway, IPremiumPaymentGateway
 
 
 class Payment(object):
