@@ -1,11 +1,12 @@
 <h2>Instructiuni de folosire</h2>
 
-<p>Mai intai se instaleaza requirements:
-`pip install -r requirements.txt`</p>
+<p>Mai intai se instaleaza requirements:</p>
+`pip install -r requirements.txt`
 
 
-<p>Se porneste serverul de Flask folosing comanda
+<p>Se porneste serverul de Flask folosing comanda</p>
 `flask run`
+<p>
 sau din butonul `run` din IDE.
 </p>
 
