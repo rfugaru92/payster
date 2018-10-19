@@ -56,6 +56,28 @@ class Tests(test.TestCase):
         )
         self.assertEqual(response.status_code, 400)
 
+    def test_negative_amount(self):
+        invalid_amount = -10
+        self.dummy_data['amount'] = invalid_amount
+
+        response = self.app.post(
+            '/pay',
+            data=self.dummy_data,
+            follow_redirects=True
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_zero_amount(self):
+        invalid_amount = 0
+        self.dummy_data['amount'] = invalid_amount
+
+        response = self.app.post(
+            '/pay',
+            data=self.dummy_data,
+            follow_redirects=True
+        )
+        self.assertEqual(response.status_code, 400)
+
 
 if __name__ == "__main__":
     test.main()
