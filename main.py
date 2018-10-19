@@ -15,7 +15,7 @@ def ProcessPayment():
         try:
             valid_data = validate(request)
         except Exception as e:
-            return Response(e.__str__(), status=400)
+            return Response(e.__str__() + " <br><a href='/pay'>Go back</a>", status=400)
 
         payment = Payment(valid_data)
         try:
