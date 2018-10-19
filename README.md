@@ -9,4 +9,4 @@
 sau din butonul `run` din IDE.
 </p>
 
-<p>Se deschide in browser `http://localhost:5000/pay`</p>
+<p>Se deschide in browser (http://localhost:5000/pay)</p>
