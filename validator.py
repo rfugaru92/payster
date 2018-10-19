@@ -13,7 +13,7 @@ class Validator:
             if val:
                 if 'type' in VALIDATION_SCHEMA['properties'][key]:
                     if not isinstance(val, VALIDATION_SCHEMA['properties'][key]['type']):
-                        raise Exception('Wrong field type for %s', key)
+                        raise Exception('Wrong field type for %s' % key)
 
                 if 'validation_method' in VALIDATION_SCHEMA['properties'][key]:
                     method = getattr(self, VALIDATION_SCHEMA['properties'][key]['validation_method'])
@@ -59,7 +59,7 @@ class Validator:
     def _has_required(request):
         for prop in VALIDATION_SCHEMA['required']:
             if not request.form.get(prop):
-                raise Exception("Field %s is required.", prop)
+                raise Exception("Field %s is required." % prop)
 
 
 VALIDATION_SCHEMA = {

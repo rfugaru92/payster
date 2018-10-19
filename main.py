@@ -23,7 +23,7 @@ def ProcessPayment():
         except Exception as e:
             return Response(e.__str__(), status=400)
 
-        return Response("Payment was successful", status=200)
+        return Response("Payment was successful.<br><a href='/pay'>New payment'</a>", status=200)
 
 
 if __name__ == "__main__":
