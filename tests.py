@@ -24,15 +24,17 @@ class Tests(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_invalid_card_number(self):
-        invalid_card = "1343-2234-2342-889"
-        self.dummy_data['creditCardNumber'] = invalid_card
+        invalid_cards = ["1343-2234-2342-889", "4333-2212-43451234", "54351232534245"]
 
-        response = self.app.post(
-            '/pay',
-            data=self.dummy_data,
-            follow_redirects=True
-        )
-        self.assertEqual(response.status_code, 400)
+        for card in invalid_cards:
+            self.dummy_data['creditCardNumber'] = card
+
+            response = self.app.post(
+                '/pay',
+                data=self.dummy_data,
+                follow_redirects=True
+            )
+            self.assertEqual(response.status_code, 400)
 
     def test_expired_card(self):
         invalid_date = "2016-10-10"
